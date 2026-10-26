@@ -324,6 +324,7 @@ These are hard-won lessons. Do not "simplify" them away.
 | Gotcha | Details |
 |--------|---------|
 | **macOS `pgrep -P` is unreliable** | Silently misses child processes. Always use `ps -eo pid= -o ppid=` with awk |
+| **procps-ng 3.3.x splits `ps -o` lists differently** | `-o pid=,ppid=` is one `pid` column headed `,ppid=` on Amazon Linux 2 / RHEL 7, so every row is a bare pid and detection finds nothing. Give each field its own `-o` (`ps -eo pid= -o ppid= -o args=`); `test/save-hardening-unit-tests.sh` rejects the comma form |
 | **tmux < 3.7 mangles delimiters** | Tabs become underscores; control characters are escaped differently per version (3.4 octal, 3.5a hex, 3.6 underscore), so no control character is a portable delimiter. Use `|` (plain pipe), and order the `-F` fields so the free-form one is last — `|` is legal in both session names and paths |
 | **`printf %q` breaks fish shell** | Not POSIX. Use `posix_quote()` (single-quote wrapping with `'\''` escaping) instead |
 | **`\|\| continue` inside `$()` runs in the subshell** | `continue` executes but only affects the subshell, not the outer loop. Place `\|\| continue` outside the `$()` |
