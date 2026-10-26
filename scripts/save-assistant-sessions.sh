@@ -2475,7 +2475,7 @@ resolve_pane_candidates() {
 # of the order ps lists processes in.
 descendant_pids() {
 	local root="$1"
-	ps -eo pid=,ppid= 2>/dev/null | awk -v root="$root" '
+	ps -eo pid= -o ppid= 2>/dev/null | awk -v root="$root" '
 		{ pid[NR] = $1; parent[$1] = $2 }
 		END {
 			seen[root] = 1
@@ -2641,7 +2641,7 @@ main() {
 	SAVE_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 	# Snapshot process table and pane info to temp files (each read once)
-	ps -eo pid=,ppid=,args= >"$PS_FILE" 2>/dev/null
+	ps -eo pid= -o ppid= -o args= >"$PS_FILE" 2>/dev/null
 	if [ ! -s "$PS_FILE" ]; then
 		log "ps snapshot failed or empty, skipping save"
 		rm -f "$PS_FILE" "$PANE_FILE" "$PARTS_FILE" "$RELAUNCH_PARTS_FILE"

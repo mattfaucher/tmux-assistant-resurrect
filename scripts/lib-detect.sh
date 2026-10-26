@@ -381,7 +381,11 @@ relaunch_command_from_voucher() {
 # Returns 0 and prints the assistant PID if found, returns 1 otherwise.
 pane_has_assistant() {
 	local shell_pid="$1"
-	local snapshot="${2:-$(ps -eo pid=,ppid=,args= 2>/dev/null)}"
+	# Separate -o flags, not `-o pid=,ppid=,args=`: in `-o`, an `=` makes the
+	# rest of the argument the column header, commas included. procps-ng 3.3.10
+	# reads the comma form as a single `pid` column headed ",ppid=,args=", so
+	# every row is a bare pid and the walk below finds nothing.
+	local snapshot="${2:-$(ps -eo pid= -o ppid= -o args= 2>/dev/null)}"
 
 	# Check the pane PID itself (handles exec-replaced shells, e.g. exec claude)
 	local pane_args
