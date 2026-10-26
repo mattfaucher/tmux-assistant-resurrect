@@ -382,9 +382,12 @@ relaunch_command_from_voucher() {
 pane_has_assistant() {
 	local shell_pid="$1"
 	# Separate -o flags, not `-o pid=,ppid=,args=`: in `-o`, an `=` makes the
-	# rest of the argument the column header, commas included. procps-ng 3.3.10
+	# rest of the argument the column header, commas included. The procps-ng
+	# 3.3.x line shipped by older Linux distros (Amazon Linux 2, RHEL/CentOS 7)
 	# reads the comma form as a single `pid` column headed ",ppid=,args=", so
-	# every row is a bare pid and the walk below finds nothing.
+	# every row is a bare pid and the walk below finds nothing. Newer procps-ng
+	# and BSD ps (macOS) both parse it as intended, which is why no CI job here
+	# reaches it.
 	local snapshot="${2:-$(ps -eo pid= -o ppid= -o args= 2>/dev/null)}"
 
 	# Check the pane PID itself (handles exec-replaced shells, e.g. exec claude)
