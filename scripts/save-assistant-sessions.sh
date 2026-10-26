@@ -2600,6 +2600,13 @@ stop_save_watchdog() {
 
 # --- Main ---
 
+# Save flow: snapshot the process table and the tmux pane table once each,
+# resolve every pane's assistant and session id from those snapshots, then
+# publish the sidecar JSON and log how many sessions were saved. Arms a
+# watchdog first so a hung session lookup cannot wedge tmux-resurrect's save,
+# and clears every temp file on any exit path.
+#
+# Usage: main (no arguments; reads tmux options and the live process table)
 main() {
 	# Reset per-run: the script is sourceable, so main() can be entered more
 	# than once in one shell and a stale count would carry over.
